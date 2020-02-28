@@ -64,7 +64,7 @@ class Worker
     {
         this.friends = [];
         {
-            let cn = [...getCellNs(this.seat)];
+            let cn = [...Array(office_size).keys()];//[...getCellNs(this.seat)];
             for(let i = 0; i != 3; ++i)
             {
                 let r = Math.random();
