@@ -12,7 +12,7 @@
             <input type="button" id="abort_button" value="abort" onclick="abortItts()" style="display:none">
         </div>
         <div>
-            <canvas id="canvas" width="512" height="256"></canvas>
+            <canvas id="canvas" width="1280" height="640"></canvas>
         </div>
         
         <script src="./utils.js"></script>
