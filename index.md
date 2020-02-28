@@ -6,6 +6,7 @@
         <div>
             <p id="out">___</p>
             <input type="button" id="trace" value="trace worker" onclick="traceChange()">
+            <input type="button" value="shuffle" onclick="shuffle()">
             <input type="button" value="reseat" onclick="reseat()">
             <input type="button" value="reseatH" onclick="reseatH()">
             <input type="button" value="itterate" onclick="ittButton()">

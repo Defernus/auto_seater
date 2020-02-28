@@ -166,8 +166,8 @@ function calcOfficeHappiness(arr_s = seats, arr_w = workers)
         }
     }
 
-    //return (ret/office_size + min_happiness)/2;
-    return ret/office_size * min_happiness;
+    return (ret/office_size + min_happiness)/2;
+    //return ret/office_size * min_happiness;
 }
 
 var trace_seat = true;
@@ -205,7 +205,18 @@ function swapWorkers(a, b, arr = seats)
     return true;
 }
 
-function shuffleWorkers(arr = seats, factor = 1.)
+function bruteShuffleWorkers(arr = seats, factor = .1)
+{
+    for(let i = 0; i != arr.length; ++i)
+    {
+        if(Math.random() < factor)
+        {
+            swapWorkers(arr[i], arr[Math.floor(Math.random()*arr.length)], arr);
+        }
+    }
+}
+
+function cindeShuffleWorkers(arr = seats, factor = 1.)
 {
     let s = [...Array(arr.length).keys()];
     while(s.length != 0)
@@ -238,6 +249,15 @@ function shuffleWorkers(arr = seats, factor = 1.)
             swapWorkers(arr[i], arr[j], arr);
         }
     }
+}
+
+function shuffle()
+{
+    bruteShuffleWorkers(seats, 1);
+
+    print(calcOfficeHappiness());
+    inds = [];
+    requestAnimationFrame(redraw);
 }
 
 function redraw()
@@ -308,6 +328,8 @@ function redraw()
 
 function reseat()
 {
+    if(is_itt_in_progress)return;
+    inds = [];
     for(let i = 0; i != workers.length; ++i)
     {
         workers[i].seat = -1;
@@ -366,7 +388,7 @@ class Ind
 
 var BREEDING_FACTOR = 128;
 var POPULATION_SIZE = 16;
-var SHUFFLE_FACTOR = 0.2;
+var SHUFFLE_FACTOR = 0.05;
 
 var inds;
 
@@ -403,7 +425,7 @@ function reseatH()
     {
         let ind = new Ind(seats);
 
-        shuffleWorkers(ind.seats, SHUFFLE_FACTOR);
+        bruteShuffleWorkers(ind.seats, SHUFFLE_FACTOR);
         
         ind.happiness = calcOfficeHappiness(ind.seats, ind.workers);
         if(inds.length < POPULATION_SIZE)
@@ -462,7 +484,7 @@ function ittButton()
 
 function itterate()
 {
-    if(!inds)
+    if(!inds || inds.length == 0)
     {
         reseatH();
     }
@@ -480,7 +502,7 @@ function itterate()
         for(let j = 0; j != BREEDING_FACTOR; ++j)
         {
             let ind = new Ind(inds[i].seats);
-            shuffleWorkers(ind.seats, SHUFFLE_FACTOR);
+            bruteShuffleWorkers(ind.seats, SHUFFLE_FACTOR);
 
             ind.happiness = calcOfficeHappiness(ind.seats, ind.workers);
             population.push(ind);
@@ -577,7 +599,7 @@ for(let i = 0; i != workers.length; ++i)
 {
     workers[i].updateFriends();
 }
-shuffleWorkers();
+cindeShuffleWorkers();
 print(calcOfficeHappiness());
 
 redraw();
