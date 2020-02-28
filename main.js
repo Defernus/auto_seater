@@ -131,7 +131,7 @@ function calcWorkerHappiness(w, arr = workers)
 {
     let ret = w.seats_pr[w.seat]/(office_size-1);
     ret *= ret;
-
+    
     for(let i = 0; i != w.friends.length; ++i)
     {
         let ff = (getLengthToSeat(w.seat, arr[w.friends[i]].seat)-1)/8;
@@ -154,9 +154,10 @@ function calcOfficeHappiness(arr_s = seats, arr_w = workers)
     let ret = 0;
     let min_happiness = 1;
     let min_h_seat = 0;
+
     for(let i = 0; i != arr_s.length; ++i)
     {
-        let h = calcWorkerHappiness(seats[i], arr_w);
+        let h = calcWorkerHappiness(arr_s[i], arr_w);
         ret += h;
         if(min_happiness > h)
         {
@@ -164,10 +165,11 @@ function calcOfficeHappiness(arr_s = seats, arr_w = workers)
             min_h_seat = i;
         }
     }
-    return ret/office_size * min_happiness;
+
+    return (ret/office_size + min_happiness)/2;
 }
 
-function swapWorkers(a, b)
+function swapWorkers(a, b, arr = seats)
 {
     if(a == "undefined" || b == "undefined")
     {
@@ -178,8 +180,8 @@ function swapWorkers(a, b)
     
 
     let s = a.seat;
-    seats[a.seat] = b;
-    seats[b.seat] = a;
+    arr[a.seat] = b;
+    arr[b.seat] = a;
     a.seat = b.seat;
     b.seat = s;
 
@@ -216,7 +218,7 @@ function shuffleWorkers(arr = seats, factor = 1.)
         if(si!=-1)
         {
             s.splice(si, 1);
-            swapWorkers(arr[i], arr[j]);
+            swapWorkers(arr[i], arr[j], arr);
         }
     }
 }
@@ -266,6 +268,9 @@ function redraw()
             let text = ""+seats[i].id;
             ctx.fillText(text, (x+.15 + (text.length>1?0:.2))*seat_size, (y+.75)*seat_size);
         }
+        ctx.fillStyle = "#990000";
+        ctx.font = "8px arial";
+        ctx.fillText(i, (x+.1)*seat_size, (y+.9)*seat_size);
     }
     
     ctx.fillStyle = "#000000";
@@ -314,7 +319,7 @@ function reseat()
         delete seats[i].ps;
     }
 
-    document.getElementById("out").innerText = calcOfficeHappiness();
+    print(calcOfficeHappiness());
     requestAnimationFrame(redraw);
 }
 
@@ -322,33 +327,61 @@ class Ind
 {
     constructor(s)
     {
-        this.seats = new Array(s.length);
-        this.workers = new Array(w.length);
+        this.seats = new Array(office_size);
+        this.workers = new Array(workers_number);
 
         for(let i = 0; i != s.length; ++i)
         {
             this.seats[i] = new Worker();
             this.seats[i].copy(s[i]);
-            this.workers[seats[i].seat] = seats[i];
+            this.workers[seats[i].id] = this.seats[i];
         }
     }
 
     
 }
 
-const POPULATION_SIZE = 16;
+const BREEDING_FACTOR = 128;
+const POPULATION_SIZE = 8;
 const SHUFFLE_FACTOR = 0.1;
 
 var inds;
+
+function drawBest()
+{
+    if(!inds)
+    {
+        return;
+    }
+
+    let mi = 0;
+
+    for(let i = 1; i != inds.length; ++i)
+    {
+        if(inds[mi].happiness < inds[i].happiness)
+        {
+            mi = i;
+        }
+    }
+
+    seats = inds[mi].seats;
+    workers = inds[mi].workers;
+
+    requestAnimationFrame(redraw);
+    print(calcOfficeHappiness());
+}
+
 function reseatH()
 {
     inds = [];
     let min_h_i = 0;
 
-    for(let i = 0; i != POPULATION_SIZE*POPULATION_SIZE; ++i)
+    for(let i = 0; i != POPULATION_SIZE*BREEDING_FACTOR; ++i)
     {
         let ind = new Ind(seats);
+
         shuffleWorkers(ind.seats, SHUFFLE_FACTOR);
+        
         ind.happiness = calcOfficeHappiness(ind.seats, ind.workers);
         if(inds.length < POPULATION_SIZE)
         {
@@ -372,10 +405,36 @@ function reseatH()
         }
     }
 
-    for(let i = 0; i != POPULATION_SIZE; ++i)
+    drawBest();
+}
+
+var iit_times = 0;
+var is_itt_in_progress = false;
+
+function abortItts()
+{
+    itt_times = 0;
+}
+
+function ittButton()
+{
+    if(is_itt_in_progress)return;
+    let n = document.getElementById("itt_times").value;
+    if(Math.floor(n) != n)
     {
-        console.log(i, inds[i].happiness);
+        print("value should be integer");
+        return;
     }
+    if(n < 1)
+    {
+        print("value should be grater then '0'");
+        return;
+    }
+    is_itt_in_progress = true;
+    document.getElementById("abort_button").style.display = "";
+    itt_times = n;
+
+    requestAnimationFrame(itterate);
 }
 
 function itterate()
@@ -384,15 +443,23 @@ function itterate()
     {
         reseatH();
     }
+    if(itt_times <= 0)
+    {
+        document.getElementById("abort_button").style.display = "none";
+        is_itt_in_progress = false;
+        return;
+    }
     
     let population = [];
 
     for(let i = 0; i != POPULATION_SIZE; ++i)
     {
-        for(let j = 0; j != POPULATION_SIZE; ++j)
+        for(let j = 0; j != BREEDING_FACTOR; ++j)
         {
-            let ind = new Ind(inds[i].seats, inds[i].workers);
+            let ind = new Ind(inds[i].seats);
+            
             shuffleWorkers(ind.seats, SHUFFLE_FACTOR);
+
             ind.happiness = calcOfficeHappiness(ind.seats, ind.workers);
             population.push(ind);
         }
@@ -405,14 +472,18 @@ function itterate()
         mhi = 0;
         for(let j = 1; j != population.length; ++j)
         {
-            if(population[mhi].happiness > population[j].happiness)
+            if(population[mhi].happiness < population[j].happiness)
             {
                 mhi = j;
             }
         }
         inds.push(population.splice(mhi, 1)[0]);
-        console.log(inds[inds.length-1].happiness);
     }
+
+    drawBest();
+
+    document.getElementById("itt_times").value = --itt_times;
+    requestAnimationFrame(itterate);
 }
 
 var canvas = document.getElementById("canvas");
@@ -448,6 +519,7 @@ const office_w = 4;
 const office_cells = 6;
 const office_l = office_cells*2;
 const office_size = office_w*office_l;
+const workers_number = office_size;
 
 var cell_size = w/office_cells;
 var seat_size = cell_size/3;
@@ -479,6 +551,6 @@ for(let i = 0; i != workers.length; ++i)
     workers[i].updateFriends();
 }
 shuffleWorkers();
-document.getElementById("out").innerText = calcOfficeHappiness();
+print(calcOfficeHappiness());
 
 redraw();

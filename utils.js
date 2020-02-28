@@ -55,3 +55,10 @@ function arraySub(a, b)
     }
     return ret;
 }
+
+var out_element = document.getElementById("out");
+
+function print(msg)
+{
+    out_element.innerText = msg;
+}

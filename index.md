@@ -7,7 +7,9 @@
             <p id="out">___</p>
             <input type="button" value="reseat" onclick="reseat()">
             <input type="button" value="reseatH" onclick="reseatH()">
-            <input type="button" value="itterate" onclick="itterate()">
+            <input type="button" value="itterate" onclick="ittButton()">
+            <input type="number" id="itt_times" value="1">
+            <input type="button" id="abort_button" value="abort" onclick="abortItts()" style="display:none">
         </div>
         <div>
             <canvas id="canvas" width="512" height="256"></canvas>
