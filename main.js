@@ -166,7 +166,24 @@ function calcOfficeHappiness(arr_s = seats, arr_w = workers)
         }
     }
 
-    return (ret/office_size + min_happiness)/2;
+    //return (ret/office_size + min_happiness)/2;
+    return ret/office_size * min_happiness;
+}
+
+var trace_seat = true;
+function traceChange()
+{
+    let b = document.getElementById("trace");
+    if(b.value == "trace worker")
+    {
+        trace_seat = false;
+        b.value = "trace seat";
+    }
+    else
+    {
+        trace_seat = true;
+        b.value = "trace worker";
+    }
 }
 
 function swapWorkers(a, b, arr = seats)
@@ -227,6 +244,14 @@ function redraw()
 {
     ctx.fillStyle = "#dddddd";
     ctx.fillRect(0, 0, w, h);
+
+    let selected_seat = -1;
+
+    if(select != -1)
+    {
+        selected_seat = trace_seat?select:workers[select].seat;
+    }
+
     for(let i = 0; i != office_size; ++i)
     {
         ctx.fillStyle = "#ffffff";
@@ -334,16 +359,14 @@ class Ind
         {
             this.seats[i] = new Worker();
             this.seats[i].copy(s[i]);
-            this.workers[seats[i].id] = this.seats[i];
+            this.workers[this.seats[i].id] = this.seats[i];
         }
     }
-
-    
 }
 
-const BREEDING_FACTOR = 128;
-const POPULATION_SIZE = 8;
-const SHUFFLE_FACTOR = 0.1;
+var BREEDING_FACTOR = 128;
+var POPULATION_SIZE = 16;
+var SHUFFLE_FACTOR = 0.2;
 
 var inds;
 
@@ -457,7 +480,6 @@ function itterate()
         for(let j = 0; j != BREEDING_FACTOR; ++j)
         {
             let ind = new Ind(inds[i].seats);
-            
             shuffleWorkers(ind.seats, SHUFFLE_FACTOR);
 
             ind.happiness = calcOfficeHappiness(ind.seats, ind.workers);
@@ -504,11 +526,16 @@ canvas.onclick = function(e)
         let sq = Math.floor(oy/2);
         let row = (ox%3) == 0?0:1;
 
-        selected_seat = cell*8 + sq * 4 + row * 2 + oy%2;
+        select = cell*8 + sq * 4 + row * 2 + oy%2;
+
+        if(!trace_seat)
+        {
+            select = seats[select].id;
+        }
     }
     else
     {
-        selected_seat = -1;
+        select = -1;
     }
     requestAnimationFrame(redraw);
 }
@@ -530,7 +557,7 @@ var event;
 var seats = [];
 var workers = [];
 
-var selected_seat = -1;
+var select = -1;
 
 
 for(let i = 0; i != office_w*office_l; ++i)
