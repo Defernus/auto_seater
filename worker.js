@@ -5,7 +5,7 @@ const office_cells = 6;
 const office_l = office_cells*2;
 const office_size = office_w*office_l;
 const workers_number = office_size;
-console.log("test");
+
 class Worker
 {
 	constructor()
@@ -33,7 +33,7 @@ class Worker
 		let ret = 1;
 		for(let i = 0; i != this.friends.length; ++i)
 		{
-			let ff = (getLengthToSeat(seat, workers_seats[this.friends[i].id])-1)/8;
+			let ff = (getLengthToSeat(seat, workers_seats[this.friends[i]])-1)/8;
 			for(let j = 0; j != i; ++j)
 			{
 				ff*=ff;
