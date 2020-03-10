@@ -1,12 +1,17 @@
 <html>
 	<head>
+		<link rel="stylesheet" type="text/css" href="style.css" />
 		<script type="text/javascript" src="utils.js"></script>
 		<script type="text/javascript" src="gen_algs.js"></script>
 		<script type="text/javascript" src="worker.js"></script>
 		<script type="text/javascript" src="main.js"></script>
 	</head>
 	<body onload="onLoad()">
-		<input type="button" value="shuffle!">
-		<canvas id="canvas" width="512" height="256"></canvas>
+		<div>
+			<input id="input_data" type="file" accept="application/JSON">
+		</div>
+		<div>
+			<canvas id="canvas" width="512" height="256"></canvas>
+		</div>
 	</body>
 </html>

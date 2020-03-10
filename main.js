@@ -22,6 +22,8 @@ function onLoad()
 	h = canvas.height;
 
 	seat_size = w/(office_cells*3);
+
+	document.getElementById('input_data').addEventListener('change', handleFileSelect, false);
 }
 
 function redraw()
@@ -56,4 +58,18 @@ function redraw()
 		ctx.fillRect((3*i-.05)*seat_size, 0, seat_size*.1, seat_size*4);
 		ctx.fillRect((3*i-1)*seat_size, seat_size*1.95, seat_size*2, seat_size*.1);
 	}
+}
+
+
+let e;
+
+function handleFileSelect(evt)
+{
+	e = evt;
+	let reader = new FileReader();
+	reader.onload = function(file)
+	{
+		console.log(file);
+	}
+	reader.readAsBinaryString(e.target.files[0]);
 }
