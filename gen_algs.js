@@ -1,7 +1,7 @@
-let population_size = 32;
-let breeding_factor = 16;
+let population_size = 128;
+let breeding_factor = 32;
 
-let mutation_factor = 0.1;
+let mutation_factor = 0.05;
 
 class Population
 {
@@ -25,6 +25,7 @@ class Population
 		let ni = [];
 		let new_inds = [];
 		let worst_ind_i = 0;
+		this.best_i = 0;
 		for(let i = 0; i != population_size; ++i)
 		{
 			for(let j = 0; j != breeding_factor; ++j)
@@ -49,7 +50,7 @@ class Population
 
 					if(new_inds[worst_ind_i].getFactor() > new_inds[this.best_i].getFactor())
 					{
-						this.best_i = best_i;
+						this.best_i = worst_ind_i;
 					}
 
 					
@@ -65,7 +66,7 @@ class Population
 			}
 		}
 
-		inds = new_inds;
+		this.inds = new_inds;
 	}
 
 	getBest()
