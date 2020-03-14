@@ -4,10 +4,10 @@
 input file format
 ```JSON
 {
-	{//first worker
-		id = "worker id";
-		friends = ["ids", "of", "worker`s", "friends"];	//array of workers that must seat closer
-		enemies = [];					//array of workers that must seat as far as possible
+	{
+		"id":"worker id",
+		"friends":["ids", "of", "worker`s", "friends"],
+		"enemies":[]
 	}
 
 
