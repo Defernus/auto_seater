@@ -56,9 +56,7 @@ function arraySub(a, b)
     return ret;
 }
 
-var out_element = document.getElementById("out");
-
-function print(msg)
+function frgb(r, g, b)
 {
-    out_element.innerText = msg;
+	return "rgb("   + Math.floor(r*255) + "," + Math.floor(g*255) + "," + Math.floor(b*255) + ")";
 }

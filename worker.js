@@ -19,12 +19,12 @@ class Worker
 
 		for(let i = 0; i != 3; ++i)
 		{
-			this.friends.push(free_workers.splice(Math.floor(Math.random()*free_workers.length), 1));
+			this.friends.push(free_workers.splice(Math.floor(Math.random()*free_workers.length), 1)[0]);
 		}
 		
 		for(let i = 0; i != 2; ++i)
 		{
-			this.enemies.push(free_workers.splice(Math.floor(Math.random()*free_workers.length), 1));
+			this.enemies.push(free_workers.splice(Math.floor(Math.random()*free_workers.length), 1)[0]);
 		}
 	}
 
@@ -62,12 +62,21 @@ class Office
 	{
 		this.happiness = 0;
 
+		let min_h = 0;
+
 		for(let i = 0; i != workers.length; ++i)
 		{
-			this.happiness += workers[i].getHappiness(this.seats_by_ids, this.seats_by_ids[workers[i].id]);
+			let h = workers[i].getHappiness(this.seats_by_ids, this.seats_by_ids[workers[i].id]);
+			this.happiness += h;
+			if(h < min_h)
+			{
+				min_h = h;
+			}
 		}
 
 		this.happiness /= office_size;
+		this.happiness += min_h;
+		//this.happiness /= 2;
 	}
 
 	gen(seats)
@@ -85,6 +94,18 @@ class Office
 		return this;
 	}
 
+	check()
+	{
+		for(let i = 0; i != office_size; ++i)
+		{
+			if(this.ids_by_seats[this.seats_by_ids[i]] != i)
+			{
+				throw "id and seat isn`t match!!";
+				return false;
+			}
+		}
+		return true;
+	}
 
 	getFactor()
 	{
@@ -102,13 +123,15 @@ class Office
 			if(Math.random() < f)
 			{
 				let ii = Math.floor(Math.random()*(office_size-1));
-				if(ii >= i)++i;//
-				let a = this.seats_by_ids[ii];
-				this.seats_by_ids[ii] = this.seats_by_ids[i];
-				this.seats_by_ids[i] = a;
-				a = this.ids_by_seats[ii];
+				if(ii >= i)++i;
+				let a = this.ids_by_seats[ii];
 				this.ids_by_seats[ii] = this.ids_by_seats[i];
 				this.ids_by_seats[i] = a;
+
+
+				a = this.seats_by_ids[this.ids_by_seats[ii]];
+				this.seats_by_ids[this.ids_by_seats[ii]] = this.seats_by_ids[this.ids_by_seats[i]];
+				this.seats_by_ids[this.ids_by_seats[i]] = a;
 			}
 		}
 		this.calcHappiness();

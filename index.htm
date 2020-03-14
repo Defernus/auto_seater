@@ -11,6 +11,16 @@
 			<input id="input_data" type="file" accept="application/JSON">
 		</div>
 		<div>
+			<p id="happiness">0</p>
+			<p id="itterations">0</p>
+		</div>
+		<div>
+			<input id="button_switch_selection" type="button" value="select workers" onclick="onclickSwitchSelection()">
+			<input id="button_shuffle" type="button" value="shuffle" onclick="onclickShuffle()">
+			<input id="button_step" type="button" value="step" onclick="onclickStep()">
+			<input id="button_itterate" type="button" value="itterate" onclick="onclickItterate()">
+		</div>
+		<div>
 			<canvas id="canvas" width="512" height="256"></canvas>
 		</div>
 	</body>

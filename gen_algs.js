@@ -1,5 +1,5 @@
-let population_size = 128;
-let breeding_factor = 32;
+let population_size = 256;
+let breeding_factor = 64;
 
 let mutation_factor = 0.05;
 
