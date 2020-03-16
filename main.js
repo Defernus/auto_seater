@@ -1,5 +1,6 @@
 //vars
 let e_happiness;
+let e_selected_worker_happiness;
 let e_itterations;
 
 let e_button_switch_selection;
@@ -32,6 +33,7 @@ function onLoad()
 	itterations = 0;
 
 	e_happiness = document.getElementById("happiness");
+	e_selected_worker_happiness = document.getElementById("selected_worker_happiness");
 	e_itterations = document.getElementById("itterations");
 
 	e_button_itterate = document.getElementById("button_itterate");
@@ -76,7 +78,9 @@ function redraw()
 		{
 			selected_id = best_office.ids_by_seats[selection];	
 		}
+		e_selected_worker_happiness.innerHTML = workers[selected_id].getHappiness(best_office.seats_by_ids, selected_seat);
 	}
+
 
 	for(let i = 0; i != office_size; ++i)
 	{
@@ -93,7 +97,7 @@ function redraw()
 				let is_color_peaked = false;
 				for(let j = 0; j != fr.length; ++j)
 				{
-					if(fr[j] == i)
+					if(best_office.seats_by_ids[fr[j]] == i)
 					{
 						ctx.fillStyle = frgb(0, .25+j*.75/fr.length, 0);
 						is_color_peaked = true;
@@ -103,7 +107,7 @@ function redraw()
 				let en = workers[selected_id].enemies;
 				for(let j = 0; j != en.length && !is_color_peaked; ++j)
 				{
-					if(en[j] == i)
+					if(best_office.seats_by_ids[en[j]] == i)
 					{
 						ctx.fillStyle = frgb(.25+j*.75/en.length, 0,  0);
 						break;
@@ -164,31 +168,11 @@ function handleFileSelect(evt)
 	reader.readAsBinaryString(evt.target.files[0]);
 	reader.onload = function(f)
 	{
-		let data = JSON.parse(reader.result);
-
-		if(data.length != office_size)
-		{
-			console.error("wrong array length (must be " + office_size + ")");
-		}
-		for(let i = 0; i != office_size; ++i)
-		{
-			if(data[i].id == null || data[i].friends == null || data[i].friends.length == null || data[i].enemies == null || data[i].enemies.length == null)
-			{
-				console.error("at " + i + " wrong format!");
-				return;
-			}
-		}
-		for(let i = 0; i != office_size; ++i)
-		{
-			workers[i].id = data[i].id;
-			workers[i].friends = data[i].friends;
-			workers[i].enemies = data[i].enemies;
-		}
-
-		population = new Population((new Office()).gen([...Array(office_size).keys()]).mutate(1));
-		itterations = 0;
-		e_itterations.innerHTML = itterations;
-		requestAnimationFrame(redraw);
+		loadFromJSON(reader.resul); 
+	population = new Population((new Office()).gen([...Array(office_size).keys()]).mutate(1));
+	itterations = 0;
+	e_itterations.innerHTML = itterations;
+	requestAnimationFrame(redraw);	
 	}
 }
 

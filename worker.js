@@ -33,15 +33,41 @@ class Worker
 		let ret = 1;
 		for(let i = 0; i != this.friends.length; ++i)
 		{
-			let ff = (getLengthToSeat(seat, workers_seats[this.friends[i]])-1)/8;
+			let ff = 1-(getLengthToSeat(seat, workers_seats[this.friends[i]])-1)/8;
+			ff *= ff;
+			ff = 1-ff;
+
 			for(let j = 0; j != i; ++j)
 			{
 				ff*=ff;
 			}
-			ret*= 1-ff;
+			ret *= 1-ff;
 		}
 		return ret;
 	}
+}
+
+function loadFromJSON(src)
+{
+	let data = JSON.parse(src);
+	if(data.length != office_size)
+	{
+		console.error("wrong array length (must be " + office_size + ")");
+	}
+	for(let i = 0; i != office_size; ++i)
+	{
+		if(data[i].id == null || data[i].friends == null || data[i].friends.length == null || data[i].enemies == null || data[i].enemies.length == null)
+		{
+			console.error("at " + i + " wrong format!");
+			return;
+		}
+	}
+	for(let i = 0; i != office_size; ++i)
+	{
+		workers[i].id = data[i].id;
+		workers[i].friends = data[i].friends;
+		workers[i].enemies = data[i].enemies;
+	}	
 }
 
 let workers = [];
