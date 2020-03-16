@@ -43,6 +43,18 @@ class Worker
 			}
 			ret *= 1-ff;
 		}
+		/*for(let i = 0; i != this.enemies.length; ++i)
+		{
+			let ff = (getLengthToSeat(seat, workers_seats[this.enemies[i]])-1)/8;
+			ff *= ff;
+			ff = 1-ff;
+
+			for(let j = 0; j != i; ++j)
+			{
+				ff*=ff;
+			}
+			ret *= 1-ff;
+		}*/
 		return ret;
 	}
 }
@@ -86,13 +98,15 @@ class Office
 
 	calcHappiness()
 	{
+		//this.happiness = workers[0].getHappiness(this.seats_by_ids, this.seats_by_ids[0]);
+		
 		this.happiness = 0;
 
 		let min_h = 0;
 
 		for(let i = 0; i != workers.length; ++i)
 		{
-			let h = workers[i].getHappiness(this.seats_by_ids, this.seats_by_ids[workers[i].id]);
+			let h = workers[i].getHappiness(this.seats_by_ids, this.seats_by_ids[i]);
 			this.happiness += h;
 			if(h < min_h)
 			{
@@ -101,8 +115,8 @@ class Office
 		}
 
 		this.happiness /= office_size;
-		this.happiness += min_h;
-		//this.happiness /= 2;
+		this.happiness += min_h*2;
+		//this.happiness /= 2;*/
 	}
 
 	gen(seats)

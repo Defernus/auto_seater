@@ -99,7 +99,7 @@ function redraw()
 				{
 					if(best_office.seats_by_ids[fr[j]] == i)
 					{
-						ctx.fillStyle = frgb(0, .25+j*.75/fr.length, 0);
+						ctx.fillStyle = frgb(0, 1-j*.75/fr.length, 0);
 						is_color_peaked = true;
 						break;
 					}
@@ -109,7 +109,7 @@ function redraw()
 				{
 					if(best_office.seats_by_ids[en[j]] == i)
 					{
-						ctx.fillStyle = frgb(.25+j*.75/en.length, 0,  0);
+						ctx.fillStyle = frgb(1-j*.75/en.length, 0,  0);
 						break;
 					}
 				}
@@ -144,13 +144,13 @@ function onclickSwitchSelection()
 	{
 		is_worker_selected = false;
 		selection = population.getBest().ids_by_seats[selection];
-		e_button_switch_selection.innerHTML = "select seats";
+		e_button_switch_selection.value = "select seats";
 	}
 	else
 	{
 		is_worker_selected = true;
 		selection = population.getBest().seats_by_ids[selection];
-		e_button_switch_selection.innerHTML = "select workers";
+		e_button_switch_selection.value = "select workers";
 	}
 
 }
