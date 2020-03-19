@@ -6,6 +6,9 @@ def genId(i):
 
 office_size = 48
 
+'''
+names = [];
+
 data = []
 index_id = {}
 
@@ -25,7 +28,14 @@ for i in range(office_size):
     for j in range(en):
         en_i = randint(0, len(free_workers)-1)
         data[i]['enemies'].append(free_workers.pop(en_i)['id'])
-    
+'''
+
+workers = []
+
+for i in range(office_size):
+    workers.append({'value': genId(i), 'text': 'worker_' + genId(i), 'friends': [], 'enemies': []})
+
+data = {'workers': workers}
 
 f = open("test.json", "w")
 f.write(dumps(data))
