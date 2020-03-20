@@ -1,4 +1,4 @@
-function createElement(tag, id, parent_id)
+	function createElement(tag, id, parent_id)
 {
 	let p = document.getElementById(parent_id);
 	if(!p)

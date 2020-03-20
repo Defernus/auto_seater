@@ -78,7 +78,9 @@ function redraw()
 		{
 			selected_id = best_office.ids_by_seats[selection];	
 		}
-		e_selected_worker_happiness.innerHTML = workers[selected_id].getHappiness(best_office.seats_by_ids, selected_seat);
+		s = "happiness " + workers[selected_id].getHappiness(best_office.seats_by_ids, selected_seat) + "\n";
+		s += "имя " + workers[selected_id].name;
+		e_selected_worker_happiness.innerHTML = s; 
 	}
 
 
@@ -168,11 +170,11 @@ function handleFileSelect(evt)
 	reader.readAsBinaryString(evt.target.files[0]);
 	reader.onload = function(f)
 	{
-		loadFromJSON(reader.resul); 
-	population = new Population((new Office()).gen([...Array(office_size).keys()]).mutate(1));
-	itterations = 0;
-	e_itterations.innerHTML = itterations;
-	requestAnimationFrame(redraw);	
+		loadFromJSON(reader.result); 
+		population = new Population((new Office()).gen([...Array(office_size).keys()]).mutate(1));
+		itterations = 0;
+		e_itterations.innerHTML = itterations;
+		requestAnimationFrame(redraw);	
 	}
 }
 

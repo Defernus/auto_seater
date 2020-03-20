@@ -61,14 +61,14 @@ class Worker
 
 function loadFromJSON(src)
 {
-	let data = JSON.parse(src);
-	if(data.length != office_size)
+	let data = JSON.parse(src).workers;
+	if(data.length > office_size)
 	{
-		console.error("wrong array length (must be " + office_size + ")");
+		console.error("wrong array length (must be less than " + (office_size+1) + ")");
 	}
-	for(let i = 0; i != office_size; ++i)
+	for(let i = 0; i != data.length; ++i)
 	{
-		if(data[i].id == null || data[i].friends == null || data[i].friends.length == null || data[i].enemies == null || data[i].enemies.length == null)
+		if(isNaN(data[i].value) || data[i].friends == null || data[i].friends.length == null || data[i].enemies == null || data[i].enemies.length == null)
 		{
 			console.error("at " + i + " wrong format!");
 			return;
@@ -76,9 +76,20 @@ function loadFromJSON(src)
 	}
 	for(let i = 0; i != office_size; ++i)
 	{
-		workers[i].id = data[i].id;
-		workers[i].friends = data[i].friends;
-		workers[i].enemies = data[i].enemies;
+		if(i < data.length)
+		{
+			workers[i].name = data[i].text;
+			workers[i].id = Number(data[i].value);
+			workers[i].friends = data[i].friends;
+			workers[i].enemies = data[i].enemies;
+		}
+		else
+		{
+			workers[i].name = "none";
+			workers[i].id = i;
+			workers[i].friends = [];
+			workers[i].enemies = [];
+		}
 	}	
 }
 

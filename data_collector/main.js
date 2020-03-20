@@ -1,3 +1,4 @@
+const FRIENDS_MAX = 3;
 let friends_selectors;
 let options;
 let data;
@@ -23,7 +24,7 @@ function checkData(data)
 	}
 	for(let i = 0; i != data.workers.length; ++i)
 	{
-		if(!data.workers[i].value)
+		if(data.workers[i].value == 'undefined')
 		{
 			throw "value of " + i + " worker is missed!";
 		}
@@ -64,7 +65,13 @@ function onWorkerSelected(e)
 	}
 	friends_selectors = [];
 
-	if(w_id != "")	
+	let el = document.getElementById("enemie_selector");
+	if(el)
+	{
+		el.parentNode.removeChild(el);
+	}
+
+	if(w_id != "")
 	{
 		for(let i = 0; i != data.workers.length; ++i)
 		{
@@ -88,7 +95,14 @@ function onWorkerSelected(e)
 		for(let i = 0; i < data.workers[w_i].friends.length; ++i)
 		{
 			friends_selectors[i].value = data.workers[w_i].friends[i];
-			options.push([]);
+			if(options.length < i+2)
+			{
+				options.push([]);
+			}
+			else
+			{
+				options[i+1] = []
+			}
 			for(let j = 0; j != options[i].length; ++j)
 			{
 				if(options[i][j].value != data.workers[w_i].friends[i])
@@ -96,7 +110,19 @@ function onWorkerSelected(e)
 					options[i+1].push(options[i][j]);
 				}
 			}
-			friends_selectors.push(createSelect("friends_selector_" + (i+1), options[i+1], "friends_selectors"));
+			if(i >= (FRIENDS_MAX-1))
+			{
+				el = createSelect("enemie_selector", options[FRIENDS_MAX], "enemies_selector");
+				el.onchange = onEnemieSelectChange;
+				if(data.workers[w_i].enemies.length>0)
+				{
+					el.value = data.workers[w_i].enemies[0];
+				}
+				break;
+			}
+			let fr = createSelect("friends_selector_" + (i+1), options[i+1], "friends_selectors");
+			friends_selectors.push(fr);
+			fr.onchange = onSelectorChanged;
 		}
 
 	}
@@ -105,7 +131,7 @@ function onWorkerSelected(e)
 
 function onSelectorChanged(e)
 {
-	let sw_id = e.srcElement.value;
+	let sw_id = Number(e.srcElement.value);
 
 	let selector_i = Number(e.srcElement.id.slice(17));
 	console.log(selector_i);
@@ -118,10 +144,22 @@ function onSelectorChanged(e)
 	data.workers[w_i].friends.length = selector_i;
 
 	console.log(sw_id);
+	let el = document.getElementById("enemie_selector");
+	if(el)
+	{
+		el.parentNode.removeChild(el);
+	}
 	if(sw_id != "")
 	{
 		data.workers[w_i].friends.push(sw_id);
-		options.push([]);
+		if(options.length < selector_i+2)
+		{
+			options.push([]);
+		}
+		else
+		{
+			options[selector_i+1] = []
+		}
 		for(let i = 0; i != options[selector_i].length; ++i)
 		{
 			if(options[selector_i][i].value != sw_id)
@@ -129,16 +167,43 @@ function onSelectorChanged(e)
 				options[selector_i+1].push(options[selector_i][i]);
 			}
 		}
-		friends_selectors.push(createSelect("friends_selector_" + (selector_i+1), options[selector_i+1], "friends_selectors"));
-		friends_selectors[selector_i+1].onchange = onSelectorChanged;
+		if((selector_i+1) < FRIENDS_MAX)
+		{
+			friends_selectors.push(createSelect("friends_selector_" + (selector_i+1), options[selector_i+1], "friends_selectors"));
+			friends_selectors[selector_i+1].onchange = onSelectorChanged;
+			
+		}
+		else
+		{
+			el = createSelect("enemie_selector", options[selector_i+1], "enemies_selector");
+			el.onchange = onEnemieSelectChange;
+		}
 	}
 	updateSaveLink();
 }
 
+function onEnemieSelectChange(e)
+{
+	data.workers[w_i].enemies = [e.srcElement.value];
+}
+
 function updateSaveLink()
 {
+	let convertDict = {'а': 'u0430', 'б': 'u0431', 'в': 'u0432', 'г': 'u0433', 'д': 'u0434', 'е': 'u0435', 'ё': 'u0451', 'ж': 'u0436', 'з': 'u0437', 'и': 'u0438', 'й': 'u0439', 'к': 'u043a', 'л': 'u043b', 'м': 'u043c', 'н': 'u043d', 'о': 'u043e', 'п': 'u043f', 'р': 'u0440', 'с': 'u0441', 'т': 'u0442', 'у': 'u0443', 'ф': 'u0444', 'х': 'u0445', 'ц': 'u0446', 'ч': 'u0447', 'ш': 'u0448', 'щ': 'u0449', 'ъ': 'u044a', 'ы': 'u044b', 'ь': 'u044c', 'э': 'u044d', 'ю': 'u044e', 'я': 'u044f', 'А': 'u0410', 'Б': 'u0411', 'В': 'u0412', 'Г': 'u0413', 'Д': 'u0414', 'Е': 'u0415', 'Ё': 'u0401', 'Ж': 'u0416', 'З': 'u0417', 'И': 'u0418', 'Й': 'u0419', 'К': 'u041a', 'Л': 'u041b', 'М': 'u041c', 'Н': 'u041d', 'О': 'u041e', 'П': 'u041f', 'Р': 'u0420', 'С': 'u0421', 'Т': 'u0422', 'У': 'u0423', 'Ф': 'u0424', 'Х': 'u0425', 'Ц': 'u0426', 'Ч': 'u0427', 'Ш': 'u0428', 'Щ': 'u0429', 'Ъ': 'u042a', 'Ы': 'u042b', 'Ь': 'u042c', 'Э': 'u042d', 'Ю': 'u042e', 'Я': 'u042f'}
 	let text = JSON.stringify(data);
-	let file = new Blob([text], {type: 'application/JSON'});
+	let result = ""
+	for (let i = 0;i<text.length;i++)
+	{
+		if (text[i] in convertDict)
+		{
+			result +=  "\\" + convertDict[text[i]];
+		}
+		else
+		{
+			result += text[i];
+		}
+	}
+	let file = new Blob([result], {type: 'application/json',encode: 'utf8'});
 
 	let url = window.URL.createObjectURL(file);
 
