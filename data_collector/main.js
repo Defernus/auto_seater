@@ -54,6 +54,43 @@ function handleFileSelect(evt)
 	}
 }
 
+function updateColors()
+{
+	let e = document.getElementById("worker_select");
+	for(let i = 1; i < e.options.length; ++i)
+	{
+		if(e.options[i].value == data.workers[w_id].value)
+		{
+			e.options[i].style = "color:blue";
+			continue;
+		}
+		e.options[i].style = "";
+		
+		let is_colored = false;
+		for(let j = 0; j != data.workers[w_id].friends.length; ++j)
+		{
+			if(e.options[i].value == data.workers[w_id].friends[j])
+			{
+				e.options[i].style = "color:green";
+				is_colored = true;
+				break;
+			}
+		}
+		if(is_colored)
+		{
+			continue;
+		}
+		for(let j = 0; j != data.workers[w_id].enemies.length; ++j)
+		{
+			if(e.options[i].value == data.workers[w_id].enemies[j])
+			{
+				e.options[i].style = "color:red";
+				break;
+			}
+		}
+	}
+}
+
 function onWorkerSelected(e)
 {
 	w_id = e.srcElement.value;
@@ -71,8 +108,9 @@ function onWorkerSelected(e)
 		el.parentNode.removeChild(el);
 	}
 
-	if(w_id != "")
+	if(w_id !== "")
 	{
+		updateColors();
 		for(let i = 0; i != data.workers.length; ++i)
 		{
 			if(data.workers[i].value == w_id)
@@ -149,9 +187,10 @@ function onSelectorChanged(e)
 	{
 		el.parentNode.removeChild(el);
 	}
-	if(sw_id != "")
+	if(sw_id !== "")
 	{
 		data.workers[w_i].friends.push(sw_id);
+		updateColors();
 		if(options.length < selector_i+2)
 		{
 			options.push([]);
@@ -185,7 +224,8 @@ function onSelectorChanged(e)
 function onEnemieSelectChange(e)
 {
 	data.workers[w_i].enemies = [e.srcElement.value];
-}
+	updateColors();
+	updateSaveLink(); }
 
 function updateSaveLink()
 {
