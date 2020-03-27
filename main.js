@@ -120,16 +120,26 @@ function redraw()
 		let x = 3*getCell(i) + 2*(Math.floor(i/2)%2);
 		let y = i%2 + (Math.floor(i/4)%2)*2;
 
+		
+
 		ctx.fillRect(seat_size * (x+.05), seat_size * (y+.05), seat_size*.9, seat_size*.9); 
 		ctx.fillStyle = "#000000";
 		
-		ctx.font = Math.floor(seat_size*.7)+"px arial";
-		let text = ""+best_office.ids_by_seats[i];
-		ctx.fillText(text, (x+.15 + (text.length>1?0:.2))*seat_size, (y+.75)*seat_size);
-		
 		ctx.fillStyle = "#990000";
-		ctx.font = "8px arial";
+		ctx.font = seat_size*.2+"px arial";
 		ctx.fillText(i, (x+.1)*seat_size, (y+.9)*seat_size);
+		ctx.fillStyle = "#000000";
+		ctx.fillText(best_office.ids_by_seats[i], (x+.4)*seat_size, (y+.9)*seat_size);
+		let name = workers[best_office.ids_by_seats[i]].name
+		if(name !== undefined && name !== 'none')
+		{
+			ctx.font = seat_size*.15 + "px arial";
+			name = name.split(" ");
+			for(let j = 0; j != name.length; ++j)
+			{
+				ctx.fillText(name[j], (x+.1)*seat_size, (y+.2+.2*j)*seat_size);
+			}
+		}
 	}
 
 	ctx.fillStyle = "#000000";

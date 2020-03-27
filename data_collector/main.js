@@ -50,6 +50,7 @@ function handleFileSelect(evt)
 			e_worker_select.onchange = onWorkerSelected;
 		}
 
+		updateColors();
 		updateSaveLink();
 	}
 }
@@ -59,35 +60,13 @@ function updateColors()
 	let e = document.getElementById("worker_select");
 	for(let i = 1; i < e.options.length; ++i)
 	{
-		if(e.options[i].value == data.workers[w_id].value)
+		e.options[i].style = "";
+		if(i != 0 && data.workers[e.options[i].value].friends.length > 0)
 		{
 			e.options[i].style = "color:blue";
 			continue;
 		}
-		e.options[i].style = "";
 		
-		let is_colored = false;
-		for(let j = 0; j != data.workers[w_id].friends.length; ++j)
-		{
-			if(e.options[i].value == data.workers[w_id].friends[j])
-			{
-				e.options[i].style = "color:green";
-				is_colored = true;
-				break;
-			}
-		}
-		if(is_colored)
-		{
-			continue;
-		}
-		for(let j = 0; j != data.workers[w_id].enemies.length; ++j)
-		{
-			if(e.options[i].value == data.workers[w_id].enemies[j])
-			{
-				e.options[i].style = "color:red";
-				break;
-			}
-		}
 	}
 }
 
@@ -110,6 +89,7 @@ function onWorkerSelected(e)
 
 	if(w_id !== "")
 	{
+		w_id = Number(w_id);
 		updateColors();
 		for(let i = 0; i != data.workers.length; ++i)
 		{
@@ -169,7 +149,7 @@ function onWorkerSelected(e)
 
 function onSelectorChanged(e)
 {
-	let sw_id = Number(e.srcElement.value);
+	let sw_id = e.srcElement.value;
 
 	let selector_i = Number(e.srcElement.id.slice(17));
 	console.log(selector_i);
@@ -180,6 +160,7 @@ function onSelectorChanged(e)
 	}
 	friends_selectors.length = selector_i+1;
 	data.workers[w_i].friends.length = selector_i;
+	data.workers[w_i].enemies = [];
 
 	console.log(sw_id);
 	let el = document.getElementById("enemie_selector");
@@ -189,6 +170,7 @@ function onSelectorChanged(e)
 	}
 	if(sw_id !== "")
 	{
+		sw_id = Number(sw_id);
 		data.workers[w_i].friends.push(sw_id);
 		updateColors();
 		if(options.length < selector_i+2)
@@ -223,9 +205,15 @@ function onSelectorChanged(e)
 
 function onEnemieSelectChange(e)
 {
-	data.workers[w_i].enemies = [e.srcElement.value];
+	data.workers[w_i].enemies = [];
+	if(e.srcElement.value !== "")
+	{
+		data.workers[w_i].enemies = [Number(e.srcElement.value)];
+
+	}
 	updateColors();
-	updateSaveLink(); }
+	updateSaveLink();
+}
 
 function updateSaveLink()
 {
@@ -247,5 +235,7 @@ function updateSaveLink()
 
 	let url = window.URL.createObjectURL(file);
 
-	document.getElementById('download_link').href = url;
+	let a = document.getElementById('download_link');
+	a.href = url;
+	a.download = (new Date()).toString().slice(8, 21)+".json"
 }

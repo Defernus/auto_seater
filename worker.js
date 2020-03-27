@@ -43,25 +43,20 @@ class Worker
 			}
 			ret *= 1-ff;
 		}
-		/*for(let i = 0; i != this.enemies.length; ++i)
+		for(let i = 0; i != this.enemies.length; ++i)
 		{
-			let ff = (getLengthToSeat(seat, workers_seats[this.enemies[i]])-1)/8;
-			ff *= ff;
-			ff = 1-ff;
-
-			for(let j = 0; j != i; ++j)
-			{
-				ff*=ff;
-			}
-			ret *= 1-ff;
-		}*/
+			let ff = (getEnLengthToSeat(seat, workers_seats[this.enemies[i]])-1)/8;
+			ret *= ff*ff;
+		}
 		return ret;
 	}
 }
 
 function loadFromJSON(src)
 {
-	let data = JSON.parse(src).workers;
+	let rav = JSON.parse(src);
+	let data = rav.workers;
+	let pairs = rav.pairs;
 	if(data.length > office_size)
 	{
 		console.error("wrong array length (must be less than " + (office_size+1) + ")");
@@ -90,7 +85,12 @@ function loadFromJSON(src)
 			workers[i].friends = [];
 			workers[i].enemies = [];
 		}
-	}	
+	}
+	for(let i = 0; i != pairs.length; ++i)
+	{
+		workers[pairs[i][0]].enemies.push(pairs[i][1]);
+		workers[pairs[i][1]].enemies.push(pairs[i][0]);
+	}
 }
 
 let workers = [];
@@ -113,7 +113,7 @@ class Office
 		
 		this.happiness = 0;
 
-		let min_h = 0;
+		let min_h = 1;
 
 		for(let i = 0; i != workers.length; ++i)
 		{
@@ -126,7 +126,7 @@ class Office
 		}
 
 		this.happiness /= office_size;
-		this.happiness += min_h*2;
+		this.happiness += min_h*office_size;
 		//this.happiness /= 2;*/
 	}
 

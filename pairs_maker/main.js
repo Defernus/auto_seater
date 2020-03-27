@@ -25,6 +25,16 @@ function checkData(data)
 			throw "text of " + i + " worker is missed!";
 		}
 	}
+	if(data.pairs !== undefined)
+	{
+		for(let i = 0; i != data.pairs.length; ++i)
+		{
+			if(data.pairs[i][0] == data.pairs[i][1])
+			{
+				throw "wrong pair at position " + i;
+			}
+		}
+	}
 }
 
 function handleFileSelect(evt)
@@ -41,10 +51,35 @@ function handleFileSelect(evt)
 			data.pairs = [];
 		}
 		
-		pair_elements = [createElement("div", "pair_0", "pairs_div")];
+		pair_elements = [];
+
+		for(let i = 0; i != data.pairs.length; ++i)
+		{
+			pair_elements.push(createElement("div", "pair_"+i, "pairs_div"));
+
+			let options = data.workers;
+			let le = createSelect("left_"+i, options, "pair_"+i);
+
+			le.onchange = onLeftChange;
+			le.value = data.pairs[i][0];
+
+			options  = [];
+			for(let j = 0; j != data.workers.length; ++j)
+			{
+				if(le.value !== data.workers[j].value)
+				{
+					options.push(data.workers[j]);
+				}
+			}
+			let re = createSelect("right_"+i, options, "pair_"+i);
+			re.onchange = onRightChange;
+			re.value = data.pairs[i][1];
+		}
+
+		pair_elements.push(createElement("div", "pair_"+data.pairs.length, "pairs_div"));
 
 		let options = data.workers;
-		let le = createSelect("left_0", options, "pair_0");
+		let le = createSelect("left_"+data.pairs.length, options, "pair_"+data.pairs.length);
 
 		le.onchange = onLeftChange;
 
@@ -63,7 +98,7 @@ function onLeftChange(evt)
 	let r_el = document.getElementById("right_"+el_i);
 	if(r_el)
 	{
-		r_el.parentNode.removeChild();
+		r_el.parentNode.removeChild(r_el);
 	}
 
 	if(el.value !== "")
